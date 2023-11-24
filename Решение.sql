@@ -19,6 +19,8 @@ BEGIN
     DECLARE lastname_p VARCHAR(50);
     DECLARE email_p VARCHAR(120);
     
+    DECLARE id_del INT;
+    
 	DECLARE CONTINUE HANDLER FOR SQLEXCEPTION
     BEGIN
 		SET `_rollback` = b'1';
@@ -32,26 +34,28 @@ BEGIN
     SET lastname_p = (SELECT lastname FROM users u WHERE u.id = id_p);
     SET email_p = (SELECT email FROM users u WHERE u.id = id_p);
     
+    SET id_del = id_p;
+    
     INSERT INTO users_old (firstname, lastname, email)
     VALUES (firstname_p, lastname_p, email_p); 
     
-	-- DELETE FROM users u WHERE u.id = id_p;
-    
+    DELETE FROM users u WHERE u.id = id_del;
     IF `_rollback` THEN
 		SET move_result = CONCAT("Ошибка ", code, " ", error_string);
         ROLLBACK;
 	ELSE
-		SET move_result = "OK";         
+		SET move_result = "OK";    
+        
         COMMIT;
 	END IF;        
     
 END $$
 DELIMITER ;
     
-    CALL move_user(1, @move_result);
-    SELECT @move_result;
-    SELECT * FROM users_old;
-    SELECT * FROM users;
+CALL move_user(3, @move_result);
+SELECT @move_result;
+SELECT * FROM users_old;
+SELECT * FROM users;
     
 /*Создайте хранимую функцию hello(), которая будет возвращать приветствие, 
 в зависимости от текущего времени суток. С 6:00 до 12:00 функция должна возвращать фразу "Доброе утро", 

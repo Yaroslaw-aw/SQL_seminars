@@ -11,7 +11,7 @@ DELIMITER $$
 CREATE PROCEDURE move_user(id_p INT, OUT move_result VARCHAR(100))
 DETERMINISTIC
 BEGIN
-	DECLARE `_rollback` BIT DEFAULT b'0';
+    DECLARE `_rollback` BIT DEFAULT b'0';
     DECLARE code VARCHAR(100);
     DECLARE error_string VARCHAR(100);
     
@@ -21,12 +21,12 @@ BEGIN
     
     DECLARE id_del INT;
     
-	DECLARE CONTINUE HANDLER FOR SQLEXCEPTION
+    DECLARE CONTINUE HANDLER FOR SQLEXCEPTION
     BEGIN
-		SET `_rollback` = b'1';
+	SET `_rollback` = b'1';
         GET stacked DIAGNOSTICS CONDITION 1
         code = RETURNED_SQLSTATE, error_string = MESSAGE_TEXT;
-	END;
+    END;
     
     START TRANSACTION;  
         
@@ -40,14 +40,14 @@ BEGIN
     VALUES (firstname_p, lastname_p, email_p); 
     
     DELETE FROM users u WHERE u.id = id_del;
+
     IF `_rollback` THEN
-		SET move_result = CONCAT("Ошибка ", code, " ", error_string);
-        ROLLBACK;
-	ELSE
-		SET move_result = "OK";    
-        
+	SET move_result = CONCAT("Ошибка ", code, " ", error_string);
+    	ROLLBACK;
+    ELSE
+	SET move_result = "OK";            
         COMMIT;
-	END IF;        
+    END IF;        
     
 END $$
 DELIMITER ;
@@ -69,13 +69,13 @@ RETURNS VARCHAR(100)
 DETERMINISTIC
 
 BEGIN
-	DECLARE say_hello VARCHAR(100);
+    DECLARE say_hello VARCHAR(100);
     DECLARE time INT;    
     
     SET time = HOUR(CURRENT_TIMESTAMP);
     
     SELECT CASE
-			WHEN time BETWEEN 0 AND 6 THEN "Доброй ночи"
+            WHEN time BETWEEN 0 AND 6 THEN "Доброй ночи"
             WHEN time BETWEEN 6 AND 12 THEN "Доброй утро"
             WHEN time BETWEEN 12 AND 18 THEN "Доброй день"
             WHEN time BETWEEN 18 AND 0 THEN "Доброй вечер"

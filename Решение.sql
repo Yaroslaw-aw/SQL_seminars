@@ -15,12 +15,8 @@ BEGIN
     DECLARE code VARCHAR(100);
     DECLARE error_string VARCHAR(100);
     
-    DECLARE firstname_p VARCHAR(50);
-    DECLARE lastname_p VARCHAR(50);
-    DECLARE email_p VARCHAR(120);
-    
     DECLARE id_del INT;
-    
+
     DECLARE CONTINUE HANDLER FOR SQLEXCEPTION
     BEGIN
 	SET `_rollback` = b'1';
@@ -28,22 +24,20 @@ BEGIN
         code = RETURNED_SQLSTATE, error_string = MESSAGE_TEXT;
     END;
     
-    START TRANSACTION;  
-        
-    SET firstname_p = (SELECT firstname FROM users u WHERE u.id = id_p);    
-    SET lastname_p = (SELECT lastname FROM users u WHERE u.id = id_p);
-    SET email_p = (SELECT email FROM users u WHERE u.id = id_p);
-    
+    START TRANSACTION;         
+   
     SET id_del = id_p;
     
     INSERT INTO users_old (firstname, lastname, email)
-    VALUES (firstname_p, lastname_p, email_p); 
+    SELECT firstname, lastname, email
+    FROM users u
+    WHERE u.id = id_p; 
     
     DELETE FROM users u WHERE u.id = id_del;
 
     IF `_rollback` THEN
 	SET move_result = CONCAT("Ошибка ", code, " ", error_string);
-    	ROLLBACK;
+        ROLLBACK;
     ELSE
 	SET move_result = "OK";            
         COMMIT;
@@ -75,9 +69,9 @@ BEGIN
     SET time = HOUR(CURRENT_TIMESTAMP);
     
     SELECT CASE
-            WHEN time BETWEEN 0 AND 6 THEN "Доброй ночи"
+	    WHEN time BETWEEN 0 AND 6 THEN "Доброй ночи"
             WHEN time BETWEEN 6 AND 12 THEN "Доброе утро"
-            WHEN time BETWEEN 12 AND 18 THEN "Добрый день"
+            WHEN time BETWEEN 12 AND 17 THEN "Добрый день"
             WHEN time BETWEEN 18 AND 24 THEN "Добрый вечер"
 	END INTO say_hello;
 	RETURN say_hello;
@@ -85,3 +79,4 @@ END $$
 DELIMITER ;
 
 SELECT hello();
+

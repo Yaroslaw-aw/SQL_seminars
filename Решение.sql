@@ -52,7 +52,7 @@ BEGIN
 END $$
 DELIMITER ;
     
-CALL move_user(3, @move_result);
+CALL move_user(1, @move_result);
 SELECT @move_result;
 SELECT * FROM users_old;
 SELECT * FROM users;

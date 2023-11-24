@@ -69,8 +69,8 @@ BEGIN
     SET time = HOUR(CURRENT_TIMESTAMP);
     
     SELECT CASE
-	    WHEN time BETWEEN 0 AND 6 THEN "Доброй ночи"
-            WHEN time BETWEEN 6 AND 12 THEN "Доброе утро"
+	    WHEN time BETWEEN 0 AND 5 THEN "Доброй ночи"
+            WHEN time BETWEEN 6 AND 11 THEN "Доброе утро"
             WHEN time BETWEEN 12 AND 17 THEN "Добрый день"
             WHEN time BETWEEN 18 AND 24 THEN "Добрый вечер"
 	END INTO say_hello;
